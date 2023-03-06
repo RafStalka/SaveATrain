@@ -6,8 +6,10 @@
 trigger:
 - master
 
+#pool:
+  #vmImage: ubuntu-latest
 pool:
-  vmImage: ubuntu-latest
+  name: local
 
 steps:
 - task: Maven@3
@@ -15,7 +17,7 @@ steps:
     mavenPomFile: 'pom.xml'
     mavenOptions: '-Xmx3072m'
     javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.8'
+    jdkVersionOption: '19'
     jdkArchitectureOption: 'x64'
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
