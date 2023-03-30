@@ -6,6 +6,10 @@ import com.saveatrain.pages.CommonVerification;
 import com.saveatrain.pages.MainPage;
 import com.saveatrain.pages.ResultPage;
 import io.qameta.allure.Description;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.io.FileHandler;
+import org.testng.ITestResult;
 import org.testng.Reporter;
 import org.testng.annotations.*;
 
@@ -16,7 +20,11 @@ import static com.saveatrain.pages.ResultPage.getResultPage;
 
 import org.openqa.selenium.WebDriver;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class MainPageTest {
     protected WebDriver driver;
@@ -40,7 +48,22 @@ public class MainPageTest {
     }
 
     @AfterMethod
-    public void tearDown() {
+    public void tearDown(ITestResult testResult) {
+        if(ITestResult.FAILURE == testResult.getStatus()) {
+            TakesScreenshot screenshot = (TakesScreenshot) driver;
+            File source = screenshot.getScreenshotAs(OutputType.FILE);
+            LocalDateTime timeNow = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH-mm-ss");
+            File destination = new File(System.getProperty("user.dir") +
+                    "/resources/screenshots/" +
+                    testResult.getName() + " ==> " + formatter.format(timeNow) + ".png");
+
+            try {
+                FileHandler.copy(source, destination);
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        }
         driver.quit();
     }
 
